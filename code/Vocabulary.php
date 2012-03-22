@@ -26,6 +26,15 @@ class Vocabulary extends DataObject {
       'MachineName',
    );
 
+   public static function find_by_machine_name($vocabMachName) {
+      return DataObject::get_one(
+         'Vocabulary',
+         sprintf('"Vocabulary"."MachineName" = \'%s\'',
+            Convert::raw2sql($vocabMachName)
+         )
+      );
+   }
+
    public function getCMSValidator() {
       return new RequiredFields('Name', 'MachineName');
    }

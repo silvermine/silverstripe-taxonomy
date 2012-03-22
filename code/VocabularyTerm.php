@@ -44,6 +44,21 @@ class VocabularyTerm extends DataObject {
       'MachineName',
    );
 
+   public static function find_by_machine_names($vocabMachName, $termMachName) {
+      $vocab = Vocabulary::find_by_machine_name($vocabMachName);
+      if (!$vocab) {
+         return null;
+      }
+
+      return self::get_one(
+         'VocabularyTerm',
+         sprintf('"VocabularyTerm"."VocabularyID" = %d AND "VocabularyTerm"."MachineName" = \'%s\'',
+            $vocab->ID,
+            Convert::raw2sql($termMachName)
+         )
+      );
+   }
+
    public function getChildrenTerms() {
       return implode(', ', $this->Children()->map('ID', 'Term'));
    }
