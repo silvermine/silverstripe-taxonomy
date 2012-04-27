@@ -13,7 +13,7 @@ class VocabularyTerm extends DataObject {
 
    static $db = array(
       'Term'        => 'VARCHAR(64)',
-      'MachineName' => 'VARCHAR(16)',
+      'MachineName' => 'VARCHAR(32)',
    );
 
    static $has_one = array(

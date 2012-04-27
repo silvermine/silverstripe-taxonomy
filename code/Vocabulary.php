@@ -11,7 +11,7 @@ class Vocabulary extends DataObject {
 
    static $db = array(
       'Name'        => 'VARCHAR(64)',
-      'MachineName' => 'VARCHAR(16)',
+      'MachineName' => 'VARCHAR(32)',
    );
 
    static $has_many = array(
