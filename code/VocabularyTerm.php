@@ -94,6 +94,7 @@ class VocabularyTerm extends DataObject {
 
    public function Summary() {
       $summary = $this->getFullTermTitle();
+      $summary .= sprintf(' [%s:%s]', $this->Vocabulary()->MachineName, $this->MachineName);
       $parents = $this->getParentsTerms();
       if (!empty($parents)) {
          $summary .= sprintf('<em>' . _t('VocabularyTerm.Summary.Parents', ' (Parent terms: %s)') . '</em>', $parents);
