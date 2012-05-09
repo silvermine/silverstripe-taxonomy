@@ -36,6 +36,8 @@ class Vocabulary extends DataObject {
    }
 
    public function getCMSValidator() {
+      // TODO: need other validation here.  probably want just alphanumeric, maybe period and hyphen
+      // SS templates need to be able to use the machine name as parameters to "if" statements
       return new RequiredFields('Name', 'MachineName');
    }
 }
