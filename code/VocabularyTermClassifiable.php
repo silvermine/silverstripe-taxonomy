@@ -19,7 +19,7 @@ class VocabularyTermClassifiable extends DataObjectDecorator {
    }
 
    public function updateCMSFields(FieldSet &$fields) {
-      $fields->addFieldToTab('Root.Taxonomy', new ManyManyPickerField(
+      $fields->addFieldToTab('Root.Taxonomy', new VocabularyTermClassifiableManyManyPickerField(
          $this->owner,
         'VocabularyTerms',
         _t('Vocabulary.Terms.Label', 'Vocabulary Terms'),
@@ -56,6 +56,36 @@ class VocabularyTermClassifiable extends DataObjectDecorator {
       }
 
       return false;
+   }
+
+}
+
+class VocabularyTermClassifiableManyManyPickerField extends ManyManyPickerField {
+
+   public function __construct($parent, $name, $title = null, $options = null) {
+      parent::__construct($parent, $name, $title, $options);
+   }
+
+   /**
+    * Add not just the term, but its parents as well if we have them.
+    */
+   public function Add($data, $term, $write = true) {
+      $accessor = $this->name;
+      $this->parent->$accessor()->add($term);
+
+      $parents = $term ? $term->Parents() : false;
+      if ($parents) {
+         foreach ($parents as $parent) {
+            $this->Add($data, $parent, false);
+         }
+      }
+
+      if ($write) {
+         $this->parent->write();
+         return Director::is_ajax() ? $this->renderWith('ItemSetField') : Director::redirectBack();
+      }
+
+      return null;
    }
 
 }
