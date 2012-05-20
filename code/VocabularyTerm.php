@@ -68,10 +68,12 @@ class VocabularyTerm extends DataObject {
    }
 
    function getCMSFields() {
-      $fields = new FieldSet(array(
-         new TextField('Term', 'Term'),
-         new TextField('MachineName', 'Machine Name'),
-         new LiteralField('', '<h3>Manage Children</h3>'),
+      $fields = parent::getCMSFields();
+      $fields->removeByName('Parents');
+      $fields->removeByName('Children');
+      $fields->addFieldToTab('Root.Main', new LiteralField('ManageChildren', '<h3>Manage Children</h3>'));
+      $fields->addFieldToTab(
+         'Root.Main',
          new ManyManyComplexTableField(
             $controller = $this,
             $name = 'Children',
@@ -79,8 +81,8 @@ class VocabularyTerm extends DataObject {
             $fieldList = array('Term' => 'Term'),
             $detailFormFields = null,
             $sourceFilter = sprintf('"VocabularyTerm"."VocabularyID" = %d AND "VocabularyTerm"."ID" <> %d', $this->VocabularyID, $this->ID)
-         ),
-      ));
+         )
+      );
       return $fields;
    }
 
