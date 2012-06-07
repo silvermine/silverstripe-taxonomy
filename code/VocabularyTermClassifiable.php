@@ -30,6 +30,23 @@ class VocabularyTermClassifiable extends DataObjectDecorator {
    }
 
    /**
+    * Helper function for determining if the owner object has any term from a
+    * given vocabulary.
+    *
+    * @param string $vocabMN the vocabulary machine name
+    * @return boolean true if the owner has any term from this vocab
+    */
+   public function HasTermFromVocab($vocabMN) {
+      foreach ($this->owner->VocabularyTerms() as $term) {
+         if ($term->Vocabulary()->MachineName == $vocabMN) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   /**
     * Helper function for templates to see if a particular page has a term in
     * a particular vocabulary.  Note that since SS (2.4.x) will not parse
     * <% uf HasVocabName($termMN, $vocabMN) %> we must result to a hack to
