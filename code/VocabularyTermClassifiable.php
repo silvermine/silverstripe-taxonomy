@@ -1,6 +1,6 @@
 <?php
 
-/* DataObjectDecorator that can be added to SiteTree nodes to allow them to be
+/* DataExtension that can be added to SiteTree nodes to allow them to be
  * classified by VocabularyTerms from the Taxonomy plugin.
  *
  * @author Jeremy Thomerson <jeremy@thomersonfamily.com>
@@ -8,17 +8,13 @@
  * @package silverstripe-taxonomy
  * @subpackage code
  */
-class VocabularyTermClassifiable extends DataObjectDecorator {
+class VocabularyTermClassifiable extends DataExtension {
 
-   function extraStatics() {
-      return array(
-         'many_many' => array(
-            'VocabularyTerms' => 'VocabularyTerm',
-         ),
-      );
-   }
+   static $many_many = array(
+      'VocabularyTerms' => 'VocabularyTerm',
+   );
 
-   public function updateCMSFields(FieldSet &$fields) {
+   public function updateCMSFields(FieldList $fields) {
       $fields->addFieldToTab('Root.Taxonomy', new VocabularyTermClassifiableManyManyPickerField(
          $this->owner,
         'VocabularyTerms',
