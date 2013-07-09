@@ -1,6 +1,7 @@
 <?php
 
-/* Data model admin for taxonomy vocabularies and terms.
+/**
+ * Data model admin for taxonomy vocabularies and terms.
  *
  * @author Jeremy Thomerson <jeremy@thomersonfamily.com>
  * @copyright (c) 2012 Jeremy Thomerson <jeremy@thomersonfamily.com>

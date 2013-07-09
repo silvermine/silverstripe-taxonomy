@@ -1,6 +1,7 @@
 <?php
 
-/* A term that can be applied to content nodes to identify and classify them
+/**
+ * A term that can be applied to content nodes to identify and classify them
  * into a secondary categorization (where the primary categorization comes from
  * the natural ordering of the nodes within the site tree).
  *
@@ -10,6 +11,8 @@
  * @subpackage code
  */
 class VocabularyTerm extends DataObject {
+
+   const AUTO_COMPLETE_FORMAT = '$Term.RAW ($Vocabulary.MachineName.RAW:$MachineName.RAW)';
 
    static $db = array(
       'Term'        => 'VARCHAR(64)',
@@ -60,7 +63,7 @@ class VocabularyTerm extends DataObject {
    }
 
    public function getChildrenTerms() {
-      return implode(', ', $this->Children()->map('ID', 'Term'));
+      return implode(', ', $this->Children()->map('ID', 'Term')->toArray());
    }
 
    public function getCMSValidator() {
@@ -91,7 +94,7 @@ class VocabularyTerm extends DataObject {
    }
 
    public function getParentsTerms() {
-      return implode(', ', $this->Parents()->map('ID', 'Term'));
+      return implode(', ', $this->Parents()->map('ID', 'Term')->toArray());
    }
 
    public function Summary() {

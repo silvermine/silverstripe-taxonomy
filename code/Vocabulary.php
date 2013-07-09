@@ -1,6 +1,7 @@
 <?php
 
-/* A named grouping of VocabularyTerms used to classify content nodes.
+/**
+ * A named grouping of VocabularyTerms used to classify content nodes.
  *
  * @author Jeremy Thomerson <jeremy@thomersonfamily.com>
  * @copyright (c) 2012 Jeremy Thomerson <jeremy@thomersonfamily.com>

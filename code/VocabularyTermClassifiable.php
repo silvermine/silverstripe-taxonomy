@@ -1,6 +1,7 @@
 <?php
 
-/* DataExtension that can be added to SiteTree nodes to allow them to be
+/**
+ * DataExtension that can be added to SiteTree nodes to allow them to be
  * classified by VocabularyTerms from the Taxonomy plugin.
  *
  * @author Jeremy Thomerson <jeremy@thomersonfamily.com>
@@ -15,14 +16,21 @@ class VocabularyTermClassifiable extends DataExtension {
    );
 
    public function updateCMSFields(FieldList $fields) {
-      $fields->addFieldToTab('Root.Taxonomy', new VocabularyTermClassifiableManyManyPickerField(
-         $this->owner,
-        'VocabularyTerms',
-        _t('Vocabulary.Terms.Label', 'Vocabulary Terms'),
-        array(
-           'ShowPickedInSearch' => false,
-        )
-      ));
+      // allow adding existing, but not editing the actual vocabulary terms
+      $config = GridFieldConfig_Base::create($itemsPerPage = 20)
+         ->addComponent(new GridFieldButtonRow('before'))
+         ->addComponent($autocomplete = new VocabularyTermClassifiableGridFieldAddExistingAutocompleter('buttons-before-left'))
+         ->addComponent(new GridFieldDeleteAction(true))
+      ;
+      $autocomplete->setResultsFormat(VocabularyTerm::AUTO_COMPLETE_FORMAT);
+
+      $picker = new GridField(
+         'VocabularyTerms',
+         _t('Vocabulary.TermsLabel', 'Vocabulary Terms'),
+         $this->owner->VocabularyTerms(),
+         $config
+      );
+      $fields->addFieldToTab('Root.Taxonomy', $picker);
    }
 
    /**
@@ -51,6 +59,8 @@ class VocabularyTermClassifiable extends DataExtension {
     * vocabulary machine name and term machine name by an underscore and place
     * the vocabulary machine name first.
     *
+    * TODO SS3.1 - now we can take proper arguments
+    *
     * @param string $termMN the term machine name (or both vocab and term - see above)
     * @param string $vocabMN the vocabulary machine name
     * @return boolean true if the owner has this term
@@ -69,36 +79,6 @@ class VocabularyTermClassifiable extends DataExtension {
       }
 
       return false;
-   }
-
-}
-
-class VocabularyTermClassifiableManyManyPickerField extends ManyManyPickerField {
-
-   public function __construct($parent, $name, $title = null, $options = null) {
-      parent::__construct($parent, $name, $title, $options);
-   }
-
-   /**
-    * Add not just the term, but its parents as well if we have them.
-    */
-   public function Add($data, $term, $write = true) {
-      $accessor = $this->name;
-      $this->parent->$accessor()->add($term);
-
-      $parents = $term ? $term->Parents() : false;
-      if ($parents) {
-         foreach ($parents as $parent) {
-            $this->Add($data, $parent, false);
-         }
-      }
-
-      if ($write) {
-         $this->parent->write();
-         return Director::is_ajax() ? $this->renderWith('ItemSetField') : Director::redirectBack();
-      }
-
-      return null;
    }
 
 }
