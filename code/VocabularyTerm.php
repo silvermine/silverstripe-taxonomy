@@ -35,7 +35,6 @@ class VocabularyTerm extends DataObject {
 
    // config for data model admin:
    static $summary_fields = array(
-      'Vocabulary.Name',
       'Term',
       'MachineName',
       'ParentsTerms',
@@ -71,40 +70,48 @@ class VocabularyTerm extends DataObject {
    }
 
    function getCMSFields() {
-      $fields = parent::getCMSFields();
-      $fields->removeByName('Parents');
-      $fields->removeByName('Children');
-      $fields->addFieldToTab('Root.Main', new LiteralField('ManageChildren', '<h3>Manage Children</h3>'));
-      $fields->addFieldToTab(
-         'Root.Main',
-         new ManyManyComplexTableField(
-            $controller = $this,
-            $name = 'Children',
-            $sourceClass = 'VocabularyTerm',
-            $fieldList = array('Term' => 'Term'),
-            $detailFormFields = null,
-            $sourceFilter = sprintf('"VocabularyTerm"."VocabularyID" = %d AND "VocabularyTerm"."ID" <> %d', $this->VocabularyID, $this->ID)
-         )
-      );
-      return $fields;
-   }
+      $fields = new FieldList();
+      $fields->add(new TextField('Term'));
+      $fields->add(new TextField('MachineName'));
 
-   public function getFullTermTitle() {
-      return sprintf('%s : %s', $this->Vocabulary()->Name, $this->Term);
+      if (!$this->ID) {
+         // if we haven't been saved, we don't want to confuse the page
+         // more with children management since you can't actually manage
+         // the children relationships until you are persisted.
+         return $fields;
+      }
+
+      $config = GridFieldConfig_RelationEditor::create($itemsPerPage = 25);
+      // Don't allow creating a new term from this page (at this time).
+      // It is simply for linking to existing ones.  In the future we
+      // could add support for creating children directly from their parent.
+      $config->removeComponentsByType('GridFieldAddNewButton');
+      $config->getComponentByType('GridFieldAddExistingAutocompleter')->setResultsFormat(self::AUTO_COMPLETE_FORMAT);
+
+      $childrenGrid = new GridField(
+         'Children',
+         'Children',
+         $this->Children(),
+         $config
+      );
+      $fields->add($childrenGrid);
+      return $fields;
    }
 
    public function getParentsTerms() {
       return implode(', ', $this->Parents()->map('ID', 'Term')->toArray());
    }
 
-   public function Summary() {
-      $summary = $this->getFullTermTitle();
-      $summary .= sprintf(' [%s:%s]', $this->Vocabulary()->MachineName, $this->MachineName);
-      $parents = $this->getParentsTerms();
-      if (!empty($parents)) {
-         $summary .= sprintf('<em>' . _t('VocabularyTerm.Summary.Parents', ' (Parent terms: %s)') . '</em>', $parents);
-      }
-      return $summary;
+   public function onBeforeDelete() {
+      // don't actually delete them, but remove
+      // the association
+      $this->Children()->removeAll();
+   }
+
+   public function getTitle() {
+      // this is used by the SS admin UI as what shows in breadcrumbs,
+      // successful save/edit messages, etc
+      return SSViewer::fromString(self::AUTO_COMPLETE_FORMAT)->process($this);
    }
 
 }

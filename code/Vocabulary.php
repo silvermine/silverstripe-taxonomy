@@ -41,4 +41,35 @@ class Vocabulary extends DataObject {
       // SS templates need to be able to use the machine name as parameters to "if" statements
       return new RequiredFields('Name', 'MachineName');
    }
+
+   public function getCMSFields() {
+      $fields = new FieldList();
+      $fields->add(new TextField('Name'));
+      $fields->add(new TextField('MachineName'));
+
+      if (!$this->ID) {
+         // if we haven't been saved, we don't want to confuse the page
+         // more with terms management since you can't actually manage
+         // the terms relationships until you are persisted.
+         return $fields;
+      }
+
+      $config = GridFieldConfig_RecordEditor::create($itemsPerPage = 25)
+         ->removeComponentsByType('GridFieldDetailForm')
+         ->addComponent($termDetailForm = new VocabularyTermDetailForm())
+      ;
+      // change button name on "add new"
+      $config->getComponentByType('GridFieldAddNewButton')->setButtonName(_t('Vocabulary.AddNewTermButtonLabel', 'Add new term to this vocabulary'));
+
+      // TODO: after a term is added, you should be taken back to the Vocabulary view or edit screen
+
+      $termsGrid = new GridField(
+         'Terms',
+         'Terms',
+         $this->Terms(),
+         $config
+      );
+      $fields->add($termsGrid);
+      return $fields;
+   }
 }

@@ -12,7 +12,6 @@ class TaxonomyModelAdmin extends ModelAdmin {
 
    static $managed_models = array(
       'Vocabulary',
-      'VocabularyTerm',
    );
 
    static $url_segment = 'taxonomy';
