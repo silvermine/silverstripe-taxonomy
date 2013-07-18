@@ -59,11 +59,11 @@ class VocabularyTermClassifiable extends DataExtension {
     * vocabulary machine name and term machine name by an underscore and place
     * the vocabulary machine name first.
     *
-    * @param string $termMN the term machine name (or both vocab and term - see above)
     * @param string $vocabMN the vocabulary machine name
+    * @param string $termMN the term machine name (or both vocab and term - see above)
     * @return boolean true if the owner has this term
     */
-   public function HasVocabTerm($termMN, $vocabMN = '') {
+   public function HasVocabTerm($vocabMN, $termMN) {
       foreach ($this->owner->VocabularyTerms() as $term) {
          if ($term->MachineName == $termMN && (empty($vocabMN) || $term->Vocabulary()->MachineName == $vocabMN)) {
             return true;
