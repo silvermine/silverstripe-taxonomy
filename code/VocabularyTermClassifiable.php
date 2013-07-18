@@ -59,19 +59,11 @@ class VocabularyTermClassifiable extends DataExtension {
     * vocabulary machine name and term machine name by an underscore and place
     * the vocabulary machine name first.
     *
-    * TODO SS3.1 - now we can take proper arguments
-    *
     * @param string $termMN the term machine name (or both vocab and term - see above)
     * @param string $vocabMN the vocabulary machine name
     * @return boolean true if the owner has this term
     */
    public function HasVocabTerm($termMN, $vocabMN = '') {
-      if (strpos($termMN, '_') !== false) {
-         $names = explode('_', $termMN);
-         $vocabMN = $names[0];
-         $termMN = $names[1];
-      }
-
       foreach ($this->owner->VocabularyTerms() as $term) {
          if ($term->MachineName == $termMN && (empty($vocabMN) || $term->Vocabulary()->MachineName == $vocabMN)) {
             return true;
