@@ -103,6 +103,8 @@ class VocabularyTerm extends DataObject {
    }
 
    public function onBeforeDelete() {
+      parent::onBeforeDelete();
+
       // don't actually delete them, but remove
       // the association
       $this->Children()->removeAll();
