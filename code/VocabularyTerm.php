@@ -95,6 +95,10 @@ class VocabularyTerm extends DataObject {
          $config
       );
       $fields->add($childrenGrid);
+
+      // Update fields in extensions
+      $this->extend('updateCMSFields', $fields);
+
       return $fields;
    }
 
