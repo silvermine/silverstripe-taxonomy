@@ -56,8 +56,8 @@ class Vocabulary extends DataObject {
 
       $config = GridFieldConfig_RecordEditor::create($itemsPerPage = 25)
          ->removeComponentsByType('GridFieldDetailForm')
-         ->addComponent($termDetailForm = new VocabularyTermDetailForm())
-      ;
+         ->addComponent($termDetailForm = new VocabularyTermDetailForm());
+
       // change button name on "add new"
       $config->getComponentByType('GridFieldAddNewButton')->setButtonName(_t('Vocabulary.AddNewTermButtonLabel', 'Add new term to this vocabulary'));
 
@@ -67,9 +67,12 @@ class Vocabulary extends DataObject {
          'Terms',
          'Terms',
          $this->Terms(),
-         $config
-      );
+         $config);
       $fields->add($termsGrid);
+
+      // Update fields in extensions
+      $this->extend('updateCMSFields', $fields);
+
       return $fields;
    }
 }
