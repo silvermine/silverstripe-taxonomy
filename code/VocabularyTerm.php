@@ -15,7 +15,7 @@ class VocabularyTerm extends DataObject {
    const AUTO_COMPLETE_FORMAT = '$Term.RAW ($Vocabulary.MachineName.RAW:$MachineName.RAW)';
 
    static $db = array(
-      'Term'        => 'VARCHAR(64)',
+      'Term'        => 'VARCHAR(128)',
       'MachineName' => 'VARCHAR(32)',
    );
 
