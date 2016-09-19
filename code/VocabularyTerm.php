@@ -10,7 +10,7 @@
  * @package silverstripe-taxonomy
  * @subpackage code
  */
-class VocabularyTerm extends DataObject {
+class VocabularyTerm extends DataObject implements PermissionProvider {
 
    const AUTO_COMPLETE_FORMAT = '$Term.RAW ($Vocabulary.MachineName.RAW:$MachineName.RAW)';
 
@@ -120,4 +120,18 @@ class VocabularyTerm extends DataObject {
       return SSViewer::fromString(self::AUTO_COMPLETE_FORMAT)->process($this);
    }
 
+   public function canView($member = null) {
+      return Permission::check(array('ADMIN', 'VIEW_TERM'), 'any', $member);
+   }
+
+   public function providePermissions() {
+      return array(
+         'VIEW_TERM' => array(
+            'name' => _t('VocabularyTerm.VIEW_ALL_DESCRIPTION', 'View any vocabulary term'),
+            'category' => _t('Permissions.TAXONOMY_CATEGORY', 'Taxonomy permissions'),
+            'sort' => -100,
+            'help' => _t('VocabularyTerm.VIEW_ALL_HELP', 'Ability to see any vocabulary term on the site')
+         ),
+      );
+   }
 }
