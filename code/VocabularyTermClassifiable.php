@@ -24,7 +24,7 @@ class VocabularyTermClassifiable extends DataExtension {
       ;
       $autocomplete->setResultsFormat(VocabularyTerm::AUTO_COMPLETE_FORMAT);
 
-      $picker = new GridField(
+      $picker = GridField::create(
          'VocabularyTerms',
          _t('Vocabulary.TermsLabel', 'Vocabulary Terms'),
          $this->owner->VocabularyTerms(),
