@@ -22,7 +22,7 @@ class VocabularyTermDetailForm_ItemRequest extends GridFieldDetailForm_ItemReque
 
    public function doSave($data, $form) {
       parent::doSave($data, $form);
-      return Controller::curr()->redirect($this->getGridField()->Link());
+      return Controller::curr()->redirect($this->getBackLink());
    }
 
 }
