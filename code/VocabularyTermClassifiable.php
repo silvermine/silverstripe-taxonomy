@@ -52,15 +52,10 @@ class VocabularyTermClassifiable extends DataExtension {
 
    /**
     * Helper function for templates to see if a particular page has a term in
-    * a particular vocabulary.  Note that since SS (2.4.x) will not parse
-    * <% uf HasVocabName($termMN, $vocabMN) %> we must result to a hack to
-    * allow checking a particular vocabulary and term.  If you need to do this,
-    * use the form <% if HasVocabName(vocMN_termMN) %> where you separate the
-    * vocabulary machine name and term machine name by an underscore and place
-    * the vocabulary machine name first.
+    * a particular vocabulary.
     *
     * @param string $vocabMN the vocabulary machine name
-    * @param string $termMN the term machine name (or both vocab and term - see above)
+    * @param string $termMN the term machine name
     * @return boolean true if the owner has this term
     */
    public function HasVocabTerm($vocabMN, $termMN) {
