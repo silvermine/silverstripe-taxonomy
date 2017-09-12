@@ -34,6 +34,19 @@ class VocabularyTermClassifiable extends DataExtension {
    }
 
    /**
+    * Helper function to return all the VocabularyTerms applied to the owner
+    * object from a given vocabulary.
+    *
+    * @param string $vocabMN the vocabulary machine name
+    * @return DataList
+    */
+   public function getAppliedTermsFromVocab($vocabMN) {
+      return $this->owner->getManyManyComponents('VocabularyTerms')
+         ->innerJoin('Vocabulary', '"VocabularyTerm".VocabularyID = vocab.ID', 'vocab')
+         ->where(sprintf('vocab.MachineName = \'%s\'', Convert::raw2sql($vocabMN)));
+   }
+
+   /**
     * Helper function for determining if the owner object has any term from a
     * given vocabulary.
     *
@@ -41,36 +54,26 @@ class VocabularyTermClassifiable extends DataExtension {
     * @return boolean true if the owner has any term from this vocab
     */
    public function HasTermFromVocab($vocabMN) {
-      foreach ($this->owner->VocabularyTerms() as $term) {
-         if ($term->Vocabulary()->MachineName == $vocabMN) {
-            return true;
-         }
-      }
-
-      return false;
+      return $this->getAppliedTermsFromVocab($vocabMN)->exists();
    }
 
    /**
     * Helper function for templates to see if a particular page has a term in
-    * a particular vocabulary.  Note that since SS (2.4.x) will not parse
-    * <% uf HasVocabName($termMN, $vocabMN) %> we must result to a hack to
-    * allow checking a particular vocabulary and term.  If you need to do this,
-    * use the form <% if HasVocabName(vocMN_termMN) %> where you separate the
-    * vocabulary machine name and term machine name by an underscore and place
-    * the vocabulary machine name first.
+    * a particular vocabulary.
     *
     * @param string $vocabMN the vocabulary machine name
-    * @param string $termMN the term machine name (or both vocab and term - see above)
+    * @param string $termMN the term machine name
     * @return boolean true if the owner has this term
     */
    public function HasVocabTerm($vocabMN, $termMN) {
-      foreach ($this->owner->VocabularyTerms() as $term) {
-         if ($term->MachineName == $termMN && (empty($vocabMN) || $term->Vocabulary()->MachineName == $vocabMN)) {
-            return true;
-         }
+      $terms = $this->owner->getManyManyComponents('VocabularyTerms', sprintf('"VocabularyTerm".MachineName = \'%s\'', Convert::raw2sql($termMN)));
+
+      if (!empty($vocabMN)) {
+         $terms = $terms->innerJoin('Vocabulary', '"VocabularyTerm".VocabularyID = "Vocabulary".ID')
+            ->where(sprintf('"Vocabulary".MachineName = \'%s\'', Convert::raw2sql($vocabMN)));
       }
 
-      return false;
+      return $terms->exists();
    }
 
 }
