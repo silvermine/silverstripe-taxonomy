@@ -38,10 +38,19 @@ class VocabularyTermClassifiable extends DataExtension {
     * object from a given vocabulary.
     *
     * @param string $vocabMN the vocabulary machine name
-    * @return DataList
+    * @return DataList or ArrayList if data is unsaved
     */
    public function getAppliedTermsFromVocab($vocabMN) {
-      return $this->owner->getManyManyComponents('VocabularyTerms')
+      $terms = $this->owner->getManyManyComponents('VocabularyTerms');
+
+      // Can't call `innerJoin` on unsaved data
+      if ($terms instanceof UnsavedRelationList) {
+         return $terms->filterByCallback(function($term) use ($vocabMN) {
+            return $term->Vocabulary()->MachineName == $vocabMN;
+         });
+      }
+
+      return $terms
          ->innerJoin('Vocabulary', '"VocabularyTerm".VocabularyID = vocab.ID', 'vocab')
          ->where(sprintf('vocab.MachineName = \'%s\'', Convert::raw2sql($vocabMN)));
    }
@@ -67,6 +76,17 @@ class VocabularyTermClassifiable extends DataExtension {
     */
    public function HasVocabTerm($vocabMN, $termMN) {
       $terms = $this->owner->getManyManyComponents('VocabularyTerms', sprintf('"VocabularyTerm".MachineName = \'%s\'', Convert::raw2sql($termMN)));
+
+      // Can't call `innerJoin` on unsaved data
+      if ($terms instanceof UnsavedRelationList) {
+         foreach ($terms as $term) {
+            if ($term->MachineName == $termMN && (empty($vocabMN) || $term->Vocabulary()->MachineName == $vocabMN)) {
+               return true;
+            }
+         }
+
+         return false;
+      }
 
       if (!empty($vocabMN)) {
          $terms = $terms->innerJoin('Vocabulary', '"VocabularyTerm".VocabularyID = "Vocabulary".ID')
