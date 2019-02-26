@@ -45,9 +45,20 @@ class VocabularyTermClassifiable extends DataExtension {
 
       // Can't call `innerJoin` on unsaved data
       if ($terms instanceof UnsavedRelationList) {
-         return $terms->filterByCallback(function($term) use ($vocabMN) {
-            return $term->Vocabulary()->MachineName == $vocabMN;
-         });
+         // Before SS 3.4, it was possible to use `$terms->filterByCallback`.
+         // However, with this PR [1], calling that function on an
+         // UnsavedRelationList will result in `Missing argument 1 for
+         // UnsavedRelationList::__construct()`.
+         // [1]: https://github.com/silverstripe/silverstripe-framework/pull/5024
+	 $output = ArrayList::create();
+
+         foreach($terms as $term) {
+            if ($term->Vocabulary()->MachineName == $vocabMN) {
+               $output->push($term);
+            }
+         }
+
+	 return $output;
       }
 
       return $terms
