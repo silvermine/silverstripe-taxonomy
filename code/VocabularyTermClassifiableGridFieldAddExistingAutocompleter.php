@@ -18,7 +18,7 @@ class VocabularyTermClassifiableGridFieldAddExistingAutocompleter extends GridFi
     * @see GridFieldAddExistingAutocompleter->getManipulatedData(GridField, SS_List)
     */
    public function getManipulatedData(GridField $gridField, SS_List $dataList) {
-      $origID = $gridField->State->GridFieldAddRelation;
+      $origID = $gridField->State->GridFieldAddRelation(null);
       $origCount = $dataList->count();
 
       $manipulatedDataList = parent::getManipulatedData($gridField, $dataList);
